@@ -1,15 +1,719 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Disaster Prediction Portal</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+  <title>🌍 PulseAlert  Hub - Prevention & Alerts</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"/>
+
+  <style>
+    :root {
+      --primary: #0d6efd;
+      --bg: #f5f7fa;
+      --white: #ffffff;
+      --text: #333;
+      --shadow: rgba(0, 0, 0, 0.1);
+      --chat-bg: #ffffff;
+      --user-bubble: #0d6efd;
+      --bot-bubble: #f1f3f5;
+      --btn-hover: #e9ecef;
+      --dark-bg: #1a1a1a;
+      --dark-card: #2d2d2d;
+      --dark-text: #e0e0e0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      transition: all 0.3s ease;
+    }
+
+    body.dark-mode {
+      background-color: var(--dark-bg);
+      color: var(--dark-text);
+    }
+
+    body.dark-mode .navbar {
+      background-color: var(--dark-card) !important;
+    }
+
+    body.dark-mode .card {
+      background-color: var(--dark-card);
+      border-color: #444;
+      color: var(--dark-text);
+    }
+
+    body.dark-mode .chat-window {
+      background-color: var(--dark-card);
+    }
+
+    body.dark-mode .chat-header {
+      background-color: var(--primary);
+    }
+
+    body.dark-mode .bot-message {
+      background-color: #3a3a3a;
+      color: var(--dark-text);
+    }
+
+    body.dark-mode .disaster-btn {
+      background-color: #3a3a3a;
+      color: var(--dark-text);
+    }
+
+    body.dark-mode .disaster-btn:hover {
+      background-color: #4a4a4a;
+    }
+
+    .hero-section {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 4rem 0;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .hero-section h1 {
+      font-size: 3rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+
+    .hero-section p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+    }
+
+    .feature-card {
+      background: white;
+      border-radius: 15px;
+      padding: 2rem;
+      box-shadow: 0 5px 15px var(--shadow);
+      transition: transform 0.3s ease;
+      margin-bottom: 2rem;
+      height: 100%;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .feature-icon {
+      font-size: 3rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin: 3rem 0 2rem 0;
+      color: var(--primary);
+    }
+
+    /* Chat Styles */
+    .chat-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      background-color: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      cursor: pointer;
+      z-index: 1000;
+      transition: transform 0.2s ease;
+    }
+
+    .chat-button:hover {
+      transform: scale(1.1);
+    }
+
+    .chat-window {
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      width: 400px;
+      max-height: 600px;
+      background: var(--chat-bg);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 1000;
+      animation: slideUp 0.3s ease-out;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .chat-header {
+      background: var(--primary);
+      color: white;
+      padding: 1rem;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chat-header i {
+      cursor: pointer;
+    }
+
+    .chat-body {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 400px;
+    }
+
+    .message {
+      max-width: 80%;
+      padding: 10px 15px;
+      border-radius: 15px;
+      line-height: 1.4;
+      font-size: 0.95rem;
+      position: relative;
+      word-wrap: break-word;
+    }
+
+    .user-message {
+      align-self: flex-end;
+      background-color: var(--user-bubble);
+      color: white;
+    }
+
+    .bot-message {
+      align-self: flex-start;
+      background-color: var(--bot-bubble);
+      color: var(--text);
+    }
+
+    .disaster-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .disaster-btn {
+      background-color: var(--bot-bubble);
+      border: none;
+      padding: 6px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 0.3s ease;
+    }
+
+    .disaster-btn:hover {
+      background-color: var(--btn-hover);
+    }
+
+    .chat-input {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid #ddd;
+      background: #fff;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      outline: none;
+      font-size: 0.95rem;
+    }
+
+    .chat-input button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      margin-left: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .chat-input button:hover {
+      background: #0b5ed7;
+    }
+
+    .typing-indicator {
+      align-self: flex-start;
+      font-size: 0.9rem;
+      color: gray;
+    }
+
+    .news-img {
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .card {
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+    }
+
+    .back-top {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 999;
+    }
+
+    .loading-spinner {
+      display: none;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .chat-window {
+        width: 95%;
+        right: 2.5%;
+      }
+
+      .hero-section h1 {
+        font-size: 2rem;
+      }
+
+      .hero-section p {
+        font-size: 1rem;
+      }
+
+      .section-title {
+        font-size: 2rem;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>🌍 Disaster Prediction</h1>
-  <p class="subtitle">Predict natural disasters with AI-powered models.</p>
-  <div class="nav">
-    <a href="/flood">🌊 Flood Prediction</a>
-    <a href="/cyclone">🌀 Cyclone Prediction</a>
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="#"><i class="fas fa-shield-alt"></i> PulseAlert Hub</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="#" onclick="scrollToSection('news')">News</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="fetchNews('earthquake')">Earthquake</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="fetchNews('flood')">Flood</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="fetchNews('wildfire')">Wildfire</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="fetchNews('hurricane')">Hurricane</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="fetchSDG11Data()">SDG 11</a></li>
+          <li class="nav-item"><a class="nav-link" href="/flood">Flood Prediction</a></li>
+          <li class="nav-item"><a class="nav-link" href="/cyclone">Cyclone Prediction</a></li>
+        </ul>
+        <div class="d-flex align-items-center">
+          <input type="text" class="form-control me-2" id="search-txt" placeholder="Search news..." style="width: 200px;">
+          <button class="btn btn-outline-light me-2" onclick="handleSearch()">Search</button>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="darkModeToggle">
+            <label class="form-check-label text-light" for="darkModeToggle">🌙</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      <h1>🌍 PulseAlert Hub</h1>
+      <p>Your comprehensive platform for disaster prevention tips and real-time alerts</p>
+      <div class="row justify-content-center">
+        <div class="col-md-3">
+          <button class="btn btn-light btn-lg" onclick="toggleChat()">
+            <i class="fas fa-comments"></i> Get Prevention Tips
+          </button>
+        </div>
+        <div class="col-md-3">
+          <button class="btn btn-outline-light btn-lg" onclick="scrollToSection('news')">
+            <i class="fas fa-newspaper"></i> View Latest Alerts
+          </button>
+        </div>
+        <div class="col-md-3">
+          <a class="btn btn-outline-light btn-lg" href="/flood">
+            <i class="fas fa-water"></i> Flood Predictor
+          </a>
+        </div>
+        <div class="col-md-3">
+          <a class="btn btn-outline-light btn-lg" href="/cyclone">
+            <i class="fas fa-wind"></i> Cyclone Predictor
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Features Section -->
+  <section class="container">
+    <div class="row">
+      <div class="col-md-4">
+        <div class="feature-card text-center">
+          <div class="feature-icon">
+            <i class="fas fa-robot"></i>
+          </div>
+          <h3>AI Prevention Tips</h3>
+          <p>Get personalized disaster prevention advice powered by advanced AI technology. Ask about any natural disaster and receive actionable safety tips.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card text-center">
+          <div class="feature-icon">
+            <i class="fas fa-broadcast-tower"></i>
+          </div>
+          <h3>Real-time Alerts</h3>
+          <p>Stay informed with the latest disaster news and emergency alerts from trusted sources worldwide. Never miss critical safety information.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card text-center">
+          <div class="feature-icon">
+            <i class="fas fa-globe"></i>
+          </div>
+          <h3>SDG 11 Focus</h3>
+          <p>Supporting UN Sustainable Development Goal 11 for resilient cities and communities through comprehensive disaster preparedness resources.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- News Section -->
+  <section id="news" class="container">
+    <h2 class="section-title">Latest Disaster News & Alerts</h2>
+    
+    <div class="loading-spinner" id="loading">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2">Fetching latest news...</p>
+    </div>
+
+    <div id="cards-container" class="row">
+      <!-- News cards will appear here -->
+    </div>
+  </section>
+
+  <!-- Back to Top Button -->
+  <div class="back-top">
+    <button class="btn btn-primary" onclick="scrollToTop()">
+      <i class="fas fa-arrow-up"></i>
+    </button>
   </div>
+
+  <!-- Floating Chat Button -->
+  <div class="chat-button" onclick="toggleChat()">
+    <i class="fas fa-comments"></i>
+  </div>
+
+  <!-- Chat Window -->
+  <div class="chat-window" id="chatWindow">
+    <div class="chat-header">
+      <span><i class="fas fa-robot"></i> PulseAlert Bot</span>
+      <i class="fas fa-times" onclick="toggleChat()"></i>
+    </div>
+
+    <div class="chat-body" id="chatBody">
+      <div class="bot-message">Hi! I'm your PulseAlert assistant. Ask me about prevention tips for any natural disaster. 😊</div>
+      <div class="bot-message">
+        Or choose a disaster below:
+        <div class="disaster-options">
+          <button class="disaster-btn" onclick="fillInput('earthquake')">Earthquake</button>
+          <button class="disaster-btn" onclick="fillInput('flood')">Flood</button>
+          <button class="disaster-btn" onclick="fillInput('fire')">Fire</button>
+          <button class="disaster-btn" onclick="fillInput('hurricane')">Hurricane</button>
+          <button class="disaster-btn" onclick="fillInput('tsunami')">Tsunami</button>
+          <button class="disaster-btn" onclick="fillInput('landslide')">Landslide</button>
+          <button class="disaster-btn" onclick="fillInput('drought')">Drought</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-input">
+      <input type="text" id="chatInput" placeholder="Type your question..." onkeydown="handleChatTyping(event)" />
+      <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="text-center py-4 mt-5 bg-dark text-light">
+    <div class="container">
+      <p>&copy; 2025 PulseAlert Hub. Supporting UN SDG 11 - Sustainable Cities and Communities</p>
+      <p><small>Powered by AI Technology & Real-time News APIs</small></p>
+    </div>
+  </footer>
+
+  <!-- Template for news card -->
+  <template id="template-news-card">
+    <div class="col-lg-4 col-md-6 mb-4">
+      <div class="card h-100 shadow-sm">
+        <img src="" class="card-img-top news-img" alt="News Image">
+        <div class="card-body">
+          <h5 class="card-title news-title"></h5>
+          <p class="card-text news-disc"></p>
+        </div>
+        <div class="card-footer text-muted news-source"></div>
+      </div>
+    </div>
+  </template>
+
+  <script>
+    // DOM elements
+    const chatWindow = document.getElementById("chatWindow");
+    const chatBody = document.getElementById("chatBody");
+    const chatInput = document.getElementById("chatInput");
+    const cardContainer = document.getElementById("cards-container");
+    const cardTemplate = document.getElementById("template-news-card");
+    const searchTxt = document.getElementById("search-txt");
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const loading = document.getElementById('loading');
+
+    // Initialize the app
+    window.addEventListener("load", () => {
+      fetchNews('earthquake OR flood OR wildfire OR hurricane');
+      loadDarkModePreference();
+    });
+
+    // Event listeners
+    darkModeToggle.addEventListener("change", toggleDarkMode);
+
+    // Chat Functions
+    function toggleChat() {
+      chatWindow.style.display = chatWindow.style.display === "flex" ? "none" : "flex";
+    }
+
+    function sendMessage() {
+      const text = chatInput.value.trim();
+      if (!text) return;
+
+      addMessage(text, "user");
+      chatInput.value = "";
+      showTypingIndicator();
+
+      fetch("/get-tips", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ disaster: text.toLowerCase() })
+      })
+      .then(res => res.json())
+      .then(data => {
+        removeTypingIndicator();
+        let responseText = data.error || data.tips;
+
+        // Format bullet points
+        if (!data.error) {
+          const tips = responseText.split('\n').filter(Boolean).map(tip => `<li>${tip.replace(/^- /, "")}</li>`).join("");
+          responseText = "<ul>" + tips + "</ul>";
+        }
+
+        setTimeout(() => {
+          addMessage(responseText, "bot");
+        }, 300);
+      })
+      .catch(err => {
+        removeTypingIndicator();
+        addMessage("🚨 Sorry, I couldn't reach the server. Make sure Ollama is running locally.", "bot");
+      });
+    }
+
+    function fillInput(disaster) {
+      chatInput.value = disaster;
+      sendMessage();
+    }
+
+    function handleChatTyping(e) {
+      if (e.key === "Enter") {
+        sendMessage();
+      }
+    }
+
+    function addMessage(text, sender) {
+      const msgDiv = document.createElement("div");
+      msgDiv.className = "message " + (sender === "user" ? "user-message" : "bot-message");
+      msgDiv.innerHTML = text;
+      chatBody.appendChild(msgDiv);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    function showTypingIndicator() {
+      const typingDiv = document.createElement("div");
+      typingDiv.className = "message typing-indicator";
+      typingDiv.id = "typing";
+      typingDiv.textContent = "Bot is typing...";
+      chatBody.appendChild(typingDiv);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    function removeTypingIndicator() {
+      const typing = document.getElementById("typing");
+      if (typing) typing.remove();
+    }
+
+    // News Functions
+    async function fetchNews(query) {
+      showLoading();
+      try {
+        const response = await fetch(`/fetch-alerts?q=${encodeURIComponent(query)}`);
+        const data = await response.json();
+        hideLoading();
+        
+        if (data.results && data.results.length > 0) {
+          bindData(data.results);
+        } else {
+          cardContainer.innerHTML = "<div class='col-12'><p class='text-center text-muted'>No disaster-related news found for this query.</p></div>";
+        }
+      } catch (error) {
+        hideLoading();
+        console.error("Error fetching the news:", error);
+        cardContainer.innerHTML = "<div class='col-12'><p class='text-center text-danger'>Error fetching news. Please try again later.</p></div>";
+      }
+    }
+
+    async function fetchSDG11Data() {
+      showLoading();
+      try {
+        const response = await fetch(`/fetch-alerts?q=sustainable development OR SDG 11`);
+        const data = await response.json();
+        hideLoading();
+        
+        if (data.results && data.results.length > 0) {
+          bindData(data.results);
+        } else {
+          cardContainer.innerHTML = "<div class='col-12'><p class='text-center text-muted'>No SDG11 news found.</p></div>";
+        }
+      } catch (error) {
+        hideLoading();
+        console.error("Error fetching SDG11 data:", error);
+        cardContainer.innerHTML = "<div class='col-12'><p class='text-center text-danger'>Error fetching SDG11 data. Please try again later.</p></div>";
+      }
+    }
+
+    function bindData(articles) {
+      cardContainer.innerHTML = "";
+      articles.forEach(article => {
+        if (article.image_url || article.title) {
+          const clone = cardTemplate.content.cloneNode(true);
+          fillData(clone, article);
+          cardContainer.appendChild(clone);
+        }
+      });
+    }
+
+    function fillData(clone, article) {
+      const img = clone.querySelector(".news-img");
+      const title = clone.querySelector(".news-title");
+      const desc = clone.querySelector(".news-disc");
+      const source = clone.querySelector(".news-source");
+      const card = clone.querySelector(".card");
+
+      img.src = article.image_url || "https://via.placeholder.com/400x200?text=No+Image";
+      title.textContent = article.title || "No Title";
+      desc.textContent = article.description || "No description available";
+      
+      const date = article.pubDate ? new Date(article.pubDate).toLocaleString("en-US", { timeZone: "Asia/Kolkata" }) : "Unknown date";
+      source.textContent = `${article.source_id || "Unknown Source"} · ${date}`;
+      
+      card.addEventListener("click", () => {
+        if (article.link) {
+          window.open(article.link, "_blank");
+        }
+      });
+    }
+
+    function handleSearch() {
+      const query = searchTxt.value.trim();
+      if (query) {
+        fetchNews(query);
+        searchTxt.value = "";
+      }
+    }
+
+    function showLoading() {
+      loading.style.display = "block";
+      cardContainer.innerHTML = "";
+    }
+
+    function hideLoading() {
+      loading.style.display = "none";
+    }
+
+    // Utility Functions
+    function scrollToSection(sectionId) {
+      document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+    }
+
+    function loadDarkModePreference() {
+      const isDarkMode = localStorage.getItem('darkMode') === 'true';
+      if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+        darkModeToggle.checked = true;
+      }
+    }
+
+    // Enter key support for search
+    searchTxt.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        handleSearch();
+      }
+    });
+  </script>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

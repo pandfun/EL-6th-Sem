@@ -16,7 +16,7 @@ from tensorflow.keras.layers import Dense
 from tensorflow.keras.callbacks import EarlyStopping
 
 # 📁 Load data
-data = pd.read_csv('flood.csv')
+data = pd.read_csv('data/flood.csv')
 
 # ✅ Outlier Capping Function
 def cap_outliers(data, col):
@@ -132,8 +132,8 @@ if prob != -1:
     print(f"🌊 Predicted Flood Probability: {prob:.4f}")
 
 
-model.save("flood_model.keras")
+model.save("data/flood_model.keras")
 
 import joblib
-joblib.dump(scaler, "scaler.pkl")
+joblib.dump(scaler, "data/scaler.pkl")
 

@@ -1,32 +1,115 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Flood Prediction</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🌊 Flood Prediction | PulseAlert Hub</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f5f7fa;
+    }
+    .navbar {
+      background-color: #0d6efd;
+    }
+    .navbar-brand, .nav-link {
+      color: white !important;
+    }
+    .hero {
+      background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+      color: white;
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+    .form-card {
+      background: white;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    footer {
+      background-color: #0d6efd;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      margin-top: 3rem;
+    }
+  </style>
 </head>
 <body>
-  <h1>🌊 Flood Prediction</h1>
-  <form method="POST" class="form">
-    {% for field in [
-      "MonsoonIntensity", "TopographyDrainage", "RiverManagement", "Deforestation", 
-      "Urbanization", "ClimateChange", "DamsQuality", "Siltation", "AgriculturalPractices",
-      "Encroachments", "IneffectiveDisasterPreparedness", "DrainageSystems", "CoastalVulnerability",
-      "Landslides", "Watersheds", "DeterioratingInfrastructure", "PopulationScore",
-      "WetlandLoss", "InadequatePlanning", "PoliticalFactors"
-    ] %}
-    <label>{{ field }}</label>
-    <input type="number" name="{{ field }}" required>
-    {% endfor %}
-    <button type="submit">Predict</button>
-  </form>
 
-  {% if prediction is not none %}
-    <div class="result">
-      <h2>Predicted Flood Probability:</h2>
-      <p>{{ prediction }}</p>
+<nav class="navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand" href="/">PulseAlert Hub</a>
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="/flood">Flood</a></li>
+        <li class="nav-item"><a class="nav-link" href="/cyclone">Cyclone</a></li>
+        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+      </ul>
     </div>
-  {% endif %}
+  </div>
+</nav>
 
-  <p><a href="/">⬅ Back to Home</a></p>
+<section class="hero">
+  <h1>🌊 Flood Prediction</h1>
+  <p>Predict flood likelihood based on environmental data</p>
+</section>
+
+<div class="container my-5">
+  <div class="form-card mx-auto" style="max-width: 700px;">
+    <form method="POST">
+      {% set default_values = {
+        "MonsoonIntensity": 2,
+        "TopographyDrainage": 8,
+        "RiverManagement": 9,
+        "Deforestation": 1,
+        "Urbanization": 2,
+        "ClimateChange": 2,
+        "DamsQuality": 9,
+        "Siltation": 1,
+        "AgriculturalPractices": 8,
+        "Encroachments": 1,
+        "IneffectiveDisasterPreparedness": 1,
+        "DrainageSystems": 9,
+        "CoastalVulnerability": 1,
+        "Landslides": 1,
+        "Watersheds": 9,
+        "DeterioratingInfrastructure": 1,
+        "PopulationScore": 2,
+        "WetlandLoss": 1,
+        "InadequatePlanning": 1,
+        "PoliticalFactors": 1
+      } %}
+
+      {% for field in default_values %}
+        <div class="mb-3">
+          <label class="form-label">{{ field }}</label>
+          <input type="number" name="{{ field }}" step="any" class="form-control"
+                 value="{{ request.form.get(field, default_values[field]) }}" required>
+        </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-primary w-100">Predict Flood Risk</button>
+    </form>
+
+    {% if prediction is not none %}
+      <div class="alert alert-{{ 'danger' if prediction.startswith('Error') else 'info' }} mt-4">
+        🌧️
+        {% if prediction.startswith('Error') %}
+          <strong>{{ prediction }}</strong>
+        {% else %}
+          Flood probability: <strong>{{ prediction }}</strong>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<footer>
+  &copy; 2025 PulseAlert Hub – Supporting UN SDG 11
+</footer>
+
 </body>
 </html>
