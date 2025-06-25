@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flood Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background-color: #f2f2f2;
+        }
+        form {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 500px;
+            margin: auto;
+        }
+        h2 {
+            text-align: center;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .result {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <form method="POST">
+        <h2>🌊 Flood Probability Predictor</h2>
+        {% for feature in default_values %}
+            <label>{{ feature }}</label>
+            <input type="number" name="{{ feature }}" step="any" required value="{{ default_values[feature] }}">
+        {% endfor %}
+        <button type="submit">Predict</button>
+        {% if prediction is defined %}
+            <div class="result">🔮 Predicted Flood Probability: <strong>{{ prediction }}</strong></div>
+        {% endif %}
+        {% if error is defined %}
+            <div class="result" style="color: red;">❌ {{ error }}</div>
+        {% endif %}
+    </form>
+</body>
+</html>
