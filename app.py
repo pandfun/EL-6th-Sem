@@ -19,7 +19,7 @@ last_seq = np.load("data/last_X_seq.npy")
 cyclone_model = load_cyclone_model("data/cyclone_model.pth", input_size=last_seq.shape[1])
 
 # === News & Chatbot Config ===
-NEWS_API_KEY = "pub_49382065c0e1d9ba756262cd97f2478b7830b"
+NEWS_API_KEY = "KEY_HERE"
 NEWS_BASE_URL = "https://newsdata.io/api/1/news"
 OLLAMA_API_URL = "http://localhost:11434/api/generate"
 
