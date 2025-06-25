@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Flood Prediction</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <h1>🌊 Flood Prediction</h1>
+  <form method="POST" class="form">
+    {% for field in [
+      "MonsoonIntensity", "TopographyDrainage", "RiverManagement", "Deforestation", 
+      "Urbanization", "ClimateChange", "DamsQuality", "Siltation", "AgriculturalPractices",
+      "Encroachments", "IneffectiveDisasterPreparedness", "DrainageSystems", "CoastalVulnerability",
+      "Landslides", "Watersheds", "DeterioratingInfrastructure", "PopulationScore",
+      "WetlandLoss", "InadequatePlanning", "PoliticalFactors"
+    ] %}
+    <label>{{ field }}</label>
+    <input type="number" name="{{ field }}" required>
+    {% endfor %}
+    <button type="submit">Predict</button>
+  </form>
+
+  {% if prediction is not none %}
+    <div class="result">
+      <h2>Predicted Flood Probability:</h2>
+      <p>{{ prediction }}</p>
+    </div>
+  {% endif %}
+
+  <p><a href="/">⬅ Back to Home</a></p>
+</body>
+</html>

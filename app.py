@@ -1,48 +1,43 @@
 from flask import Flask, render_template, request
-import pandas as pd
 import numpy as np
+import pandas as pd
 import joblib
+import torch
+
 from tensorflow.keras.models import load_model
+from cyclone_utils import load_cyclone_model, predict_cyclone
 
 app = Flask(__name__)
 
-# Load model and scaler
-model = load_model("flood_model.keras")
+# Load models once
+flood_model = load_model("flood_model.keras")
 scaler = joblib.load("scaler.pkl")
 
-# Features used by the model
-FEATURES = [
-    "MonsoonIntensity", "TopographyDrainage", "RiverManagement", "Deforestation",
-    "Urbanization", "ClimateChange", "DamsQuality", "Siltation",
-    "AgriculturalPractices", "Encroachments", "IneffectiveDisasterPreparedness",
-    "DrainageSystems", "CoastalVulnerability", "Landslides", "Watersheds",
-    "DeterioratingInfrastructure", "PopulationScore", "WetlandLoss",
-    "InadequatePlanning", "PoliticalFactors"
-]
+last_seq = np.load("last_X_seq.npy")  # Load only once at startup
+cyclone_model = load_cyclone_model("cyclone_model.pth", input_size=last_seq.shape[1])
 
-# Default values (preloaded into form)
-DEFAULT_INPUT = {
-    "MonsoonIntensity": 7, "TopographyDrainage": 5, "RiverManagement": 6,
-    "Deforestation": 7, "Urbanization": 6, "ClimateChange": 7,
-    "DamsQuality": 5, "Siltation": 6, "AgriculturalPractices": 6,
-    "Encroachments": 5, "IneffectiveDisasterPreparedness": 6,
-    "DrainageSystems": 6, "CoastalVulnerability": 5, "Landslides": 5,
-    "Watersheds": 6, "DeterioratingInfrastructure": 6, "PopulationScore": 7,
-    "WetlandLoss": 6, "InadequatePlanning": 6, "PoliticalFactors": 5
-}
-
-@app.route('/', methods=['GET', 'POST'])
+@app.route("/")
 def index():
-    if request.method == 'POST':
-        try:
-            user_input = {feature: float(request.form[feature]) for feature in FEATURES}
-            input_df = pd.DataFrame([user_input])
-            input_scaled = scaler.transform(input_df)
-            prediction = float(model.predict(input_scaled)[0][0])
-            return render_template('index.html', prediction=round(prediction, 4), default_values=user_input)
-        except Exception as e:
-            return render_template('index.html', error=str(e), default_values=DEFAULT_INPUT)
-    return render_template('index.html', default_values=DEFAULT_INPUT)
+    return render_template("index.html")
 
-if __name__ == '__main__':
+@app.route("/flood", methods=["GET", "POST"])
+def flood():
+    prediction = None
+    if request.method == "POST":
+        try:
+            features = [float(request.form[key]) for key in request.form]
+            input_df = pd.DataFrame([features], columns=request.form.keys())
+            input_scaled = scaler.transform(input_df)
+            prob = float(flood_model.predict(input_scaled)[0][0])
+            prediction = round(prob, 3)
+        except Exception as e:
+            prediction = f"Error: {e}"
+    return render_template("flood.html", prediction=prediction)
+
+@app.route("/cyclone")
+def cyclone():
+    message, prob = predict_cyclone(last_seq, cyclone_model)
+    return render_template("cyclone.html", message=message, prob=round(prob, 3))
+
+if __name__ == "__main__":
     app.run(debug=True)

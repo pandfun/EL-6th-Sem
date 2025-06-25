@@ -1,8 +1,11 @@
 flask
 pandas
 numpy
-matplotlib
-seaborn
 scikit-learn
 tensorflow
 joblib
+matplotlib
+seaborn
+torch
+xarray
+netCDF4
