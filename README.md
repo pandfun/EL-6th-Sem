@@ -1,30 +1,33 @@
 ## Setup
 
-- Create a Virtual Env (optional)
-```bash
-python3 -m venv myenv
-source myenv/bin/activate
-```
+- ### Create a Virtual Env (optional)
+  
+  ```bash
+  python3 -m venv myenv
+  source myenv/bin/activate
+  ```
 
-NOTE : Check the activiation for your OS
-
----
-<br>
+  **NOTE** : Check for the correct activiation cmd for your OS
 
 
-### Install Dependencies
-```bash
-pip install -r requirements.txt
-```
+- ### Install Dependencies
+  
+  ```bash
+  pip install -r requirements.txt
+  ```
 
-### Running the App
+- ### Download Data
+  - Download this folder and place it in project directory
+    - https://drive.google.com/drive/folders/15FmtDjzK-ewOccguaMRd-dYoDK7M7UwL?usp=sharing
 
-- First run the `model.py`
-```bash
-python3 model.py
-```
+- ### Add the API Key for fetching news
+  - Navigate to `app.py` and find the variable `NEWS_API_KEY`.
 
-- Run the `app.py` file
-```bash
-python3 app.py
-```
+- ### Running the App
+
+  - Run the `app.py` file
+  <br>
+  
+  ```bash
+  python3 app.py
+  ```
