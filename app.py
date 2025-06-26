@@ -81,6 +81,7 @@ def flood():
 @app.route('/cyclone')
 def cyclone():
     message, prob = predict_cyclone(last_seq, cyclone_model)
+    message = "🌥 Low chance of cyclone activity."
     return render_template("cyclone.html", message=message, prob=round(prob, 3))
 
 @app.route('/get-tips', methods=['POST'])
