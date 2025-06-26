@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🌀 Cyclone Prediction | PulseAlert Hub</title>
+  <title>🌊 Tsunami Prediction | PulseAlert Hub</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
       display: flex;
@@ -18,16 +17,16 @@
     .navbar {
       background-color: #0d6efd;
     }
-    .navbar-brand, .nav-link, .text-light {
+    .navbar-brand, .nav-link {
       color: white !important;
     }
     .hero {
-      background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+      background: linear-gradient(135deg, #2f80ed 0%, #1c64f2 100%);
       color: white;
       padding: 4rem 2rem;
       text-align: center;
     }
-    .result-card {
+    .card {
       background: white;
       padding: 2rem;
       border-radius: 15px;
@@ -59,21 +58,33 @@
     </div>
   </nav>
   
-
 <section class="hero">
-  <h1>🌀 Cyclone Prediction</h1>
-  <p>Live cyclone probability from real-time sequence data</p>
+  <h1>🌊 Tsunami Prediction</h1>
+  <p>Real-time probability based on water level data</p>
 </section>
 
 <div class="container my-5">
-  <div class="result-card mx-auto text-center" style="max-width: 600px;">
-    <h3>{{ message }}</h3>
-    <p class="mt-3">Cyclone probability: <strong>{{ prob }}</strong></p>
+  <div class="card mx-auto text-center" style="max-width: 500px;">
+    {% if prediction %}
+      <h4 class="mb-3">Prediction</h4>
+      {% if prediction.startswith('Error') %}
+        <div class="alert alert-danger">{{ prediction }}</div>
+      {% else %}
+        <div class="alert alert-info">Tsunami probability: <strong>{{ prediction }}</strong></div>
+        {% if prediction|float > 0.99 %}
+          <div class="alert alert-warning">⚠️ High Risk!</div>
+        {% else %}
+          <div class="alert alert-success">✅ Low Risk</div>
+        {% endif %}
+      {% endif %}
+    {% else %}
+      <p>⏳ Loading prediction...</p>
+    {% endif %}
   </div>
 </div>
 
 <footer>
-  &copy; 2025 PulseAlert Hub – Supporting UN SDG 11
+  &copy; 2025 PulseAlert Hub – Powered by NOAA Data
 </footer>
 
 </body>

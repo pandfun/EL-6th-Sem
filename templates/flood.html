@@ -40,19 +40,18 @@
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg">
-  <div class="container">
-    <a class="navbar-brand" href="/">PulseAlert Hub</a>
-    <div class="collapse navbar-collapse">
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand" href="/">PulseAlert Hub</a>
       <ul class="navbar-nav ms-auto">
         <li class="nav-item"><a class="nav-link" href="/flood">Flood</a></li>
         <li class="nav-item"><a class="nav-link" href="/cyclone">Cyclone</a></li>
-        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="/tsunami">Tsunami</a></li>
+        <li class="nav-item"><a class="nav-link" href="/earthquake">Earthquake</a></li>
       </ul>
     </div>
-  </div>
-</nav>
-
+  </nav>
+  
 <section class="hero">
   <h1>🌊 Flood Prediction</h1>
   <p>Predict flood likelihood based on environmental data</p>
@@ -60,7 +59,7 @@
 
 <div class="container my-5">
   <div class="form-card mx-auto" style="max-width: 700px;">
-    <form method="POST">
+    <form id="floodForm">
       {% set default_values = {
         "MonsoonIntensity": 2,
         "TopographyDrainage": 8,
@@ -88,28 +87,49 @@
         <div class="mb-3">
           <label class="form-label">{{ field }}</label>
           <input type="number" name="{{ field }}" step="any" class="form-control"
-                 value="{{ request.form.get(field, default_values[field]) }}" required>
+                 value="{{ request.form.get(field, field_values[field]) }}" required>
         </div>
       {% endfor %}
       <button type="submit" class="btn btn-primary w-100">Predict Flood Risk</button>
     </form>
 
-    {% if prediction is not none %}
-      <div class="alert alert-{{ 'danger' if prediction.startswith('Error') else 'info' }} mt-4">
-        🌧️
-        {% if prediction.startswith('Error') %}
-          <strong>{{ prediction }}</strong>
-        {% else %}
-          Flood probability: <strong>{{ prediction }}</strong>
-        {% endif %}
-      </div>
-    {% endif %}
+    <div id="resultArea" class="mt-4">
+      {% if prediction is not none %}
+        <div class="alert alert-{{ 'danger' if prediction is string and prediction.startswith('Error') else 'info' }}">
+          🌧️
+          {% if prediction is string and prediction.startswith('Error') %}
+            <strong>{{ prediction }}</strong>
+          {% else %}
+            Flood probability: <strong>{{ prediction }}</strong>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
   </div>
 </div>
 
 <footer>
   &copy; 2025 PulseAlert Hub – Supporting UN SDG 11
 </footer>
+
+<script>
+  document.getElementById('floodForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+
+    const response = await fetch("/flood", {
+      method: "POST",
+      body: formData
+    });
+
+    const html = await response.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    const newResult = doc.getElementById('resultArea');
+    document.getElementById('resultArea').innerHTML = newResult.innerHTML;
+  });
+</script>
 
 </body>
 </html>

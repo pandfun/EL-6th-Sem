@@ -9,6 +9,9 @@ import json
 
 from tensorflow.keras.models import load_model
 from cyclone_utils import load_cyclone_model, predict_cyclone
+from earthquake_utils import predict_earthquake
+from tsunami_utils import TinyLSTM as TsunamiLSTM, get_latest_sequence, predict_tsunami
+
 
 app = Flask(__name__)
 
@@ -19,7 +22,7 @@ last_seq = np.load("data/last_X_seq.npy")
 cyclone_model = load_cyclone_model("data/cyclone_model.pth", input_size=last_seq.shape[1])
 
 # === News & Chatbot Config ===
-NEWS_API_KEY = "KEY_HERE"
+NEWS_API_KEY = "pub_49382065c0e1d9ba756262cd97f2478b7830b"
 NEWS_BASE_URL = "https://newsdata.io/api/1/news"
 OLLAMA_API_URL = "http://localhost:11434/api/generate"
 
@@ -195,6 +198,28 @@ def load_mock_data():
             }
         ]
     }
+
+
+@app.route('/earthquake')
+def earthquake():
+    prob, status = predict_earthquake()
+    return render_template("earthquake.html", prob=prob, status=status)
+
+@app.route('/tsunami')
+def tsunami():
+    model = TsunamiLSTM()
+    # Load your trained model parameters here
+    # model.load_state_dict(torch.load("data/tsunami_model.pth"))
+    
+    seq = get_latest_sequence()
+    if seq is None:
+        prediction = "Error: Could not fetch data."
+    else:
+        prob = predict_tsunami(model, seq)
+        prediction = f"{prob:.3f}"
+
+    return render_template("tsunami.html", prediction=prediction)
+
 
 
 if __name__ == '__main__':

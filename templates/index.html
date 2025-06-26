@@ -324,6 +324,10 @@
       .section-title {
         font-size: 2rem;
       }
+
+      .btn .btn-light .btn-lg {
+        margin: 10px;
+      }
     }
   </style>
 </head>
@@ -344,8 +348,12 @@
           <li class="nav-item"><a class="nav-link" href="#" onclick="fetchNews('wildfire')">Wildfire</a></li>
           <li class="nav-item"><a class="nav-link" href="#" onclick="fetchNews('hurricane')">Hurricane</a></li>
           <li class="nav-item"><a class="nav-link" href="#" onclick="fetchSDG11Data()">SDG 11</a></li>
-          <li class="nav-item"><a class="nav-link" href="/flood">Flood Prediction</a></li>
+
+          <!-- <li class="nav-item"><a class="nav-link" href="/flood">Flood Prediction</a></li>
           <li class="nav-item"><a class="nav-link" href="/cyclone">Cyclone Prediction</a></li>
+          <li class="nav-item"><a class="nav-link" href="/earthquake">Earthquake Prediction</a></li>
+          <li class="nav-item"><a class="nav-link" href="/tsunami">Tsunami Prediction</a></li> -->
+
         </ul>
         <div class="d-flex align-items-center">
           <input type="text" class="form-control me-2" id="search-txt" placeholder="Search news..." style="width: 200px;">
@@ -365,26 +373,38 @@
       <h1>🌍 PulseAlert Hub</h1>
       <p>Your comprehensive platform for disaster prevention tips and real-time alerts</p>
       <div class="row justify-content-center">
-        <div class="col-md-3">
-          <button class="btn btn-light btn-lg" onclick="toggleChat()">
+        <div class="col-md-3 mb-3">
+          <button class="btn btn-light btn-lg w-100" onclick="toggleChat()">
             <i class="fas fa-comments"></i> Get Prevention Tips
           </button>
         </div>
-        <div class="col-md-3">
-          <button class="btn btn-outline-light btn-lg" onclick="scrollToSection('news')">
+        <div class="col-md-3 mb-3">
+          <button class="btn btn-outline-light btn-lg w-100" onclick="scrollToSection('news')">
             <i class="fas fa-newspaper"></i> View Latest Alerts
           </button>
         </div>
-        <div class="col-md-3">
-          <a class="btn btn-outline-light btn-lg" href="/flood">
+        <div class="col-md-3 mb-3">
+          <a class="btn btn-outline-light btn-lg w-100" href="/flood">
             <i class="fas fa-water"></i> Flood Predictor
           </a>
         </div>
-        <div class="col-md-3">
-          <a class="btn btn-outline-light btn-lg" href="/cyclone">
+        <div class="col-md-3 mb-3">
+          <a class="btn btn-outline-light btn-lg w-100" href="/cyclone">
             <i class="fas fa-wind"></i> Cyclone Predictor
           </a>
         </div>
+        <div class="col-md-3 mb-3">
+          <a class="btn btn-outline-light btn-lg w-100" href="/earthquake">
+            <i class="fas fa-house-crack"></i> Earthquake Predictor
+          </a>
+        </div>
+        <div class="col-md-3 mb-3">
+          <a class="btn btn-outline-light btn-lg w-100" href="/tsunami">
+            <i class="fas fa-wave-square"></i> Tsunami Predictor
+          </a>
+        </div>
+      </div>
+              
       </div>
     </div>
   </section>
